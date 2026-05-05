@@ -1,0 +1,13 @@
+# Ignorar arquivos de credenciais e variáveis de ambiente
+.streamlit/secrets.toml
+.env
+
+# Dica extra de Dev: ignorar cache do Python (aqueles arquivos .pyc que ele gera sozinho)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Dica extra de Dev: ignorar a pasta do seu ambiente virtual (pesa muito e não deve ir pro Git)
+venv/
+.venv/
+env/
