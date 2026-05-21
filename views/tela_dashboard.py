@@ -136,3 +136,45 @@ def renderizar_dashboard():
         ).interactive() # Permite zoom e pan caso o gráfico fique muito grande
 
         st.altair_chart(grafico_ranking, width="stretch")
+
+        st.divider()
+
+        # Título ranking2
+        if func_selecionado == "Todos":
+            titulo_ranking2 = f"### Ranking Funcionários (Faturamento {ano_selecionado})"
+        else:
+            titulo_ranking2 = f"### Comparativo do Funcionário {func_selecionado} no Ano ({ano_selecionado})"
+
+        st.markdown(titulo_ranking2)
+
+        # Agrupa pelo nome do Funcionário e soma Faturamento e Passadas
+        dados_ranking2 = df_filtrado.groupby("Funcionário").agg(
+            Faturamento=("Faturamento", "sum"),
+            Passadas=("Passadas", "sum")
+        ).reset_index()
+
+        # Ordena do maior faturamento para o menor e pega os Top 10
+        dados_ranking2 = dados_ranking2.sort_values("Faturamento", ascending=False).head(10)
+
+        grafico_ranking2 = alt.Chart(dados_ranking2).mark_bar().encode(
+            # Eixo X (Faturamento)
+            x=alt.X("Faturamento:Q", title="Faturamento Total (R$)"),
+
+            # Eixo Y (Funcionário)
+            # O parâmetro sort="-x" manda ordenar os funcionários pelo valor do eixo X (Faturamento) de forma decrescente.
+            y=alt.Y("Funcionário:N", sort="-x", title="Funcionário"),
+
+            color=alt.value("#ff160e"),
+
+            # Tooltips para dar detalhes ao passar o mouse
+            tooltip=[
+                alt.Tooltip("Funcionário:N"),
+                alt.Tooltip("Faturamento:Q", title="Faturamento (R$)", format=",.2f"),
+                alt.Tooltip("Passadas:Q", title="Passadas Totais")
+            ]
+        ).interactive() # Permite zoom e pan caso o gráfico fique muito grande
+
+        st.altair_chart(grafico_ranking2, width="stretch")
+
+    else:
+        st.warning("Não há dados de produção cadastrados para gerar o dashboard.")

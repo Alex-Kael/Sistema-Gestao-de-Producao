@@ -2,12 +2,12 @@
 .streamlit/secrets.toml
 .env
 
-# Dica extra de Dev: ignorar cache do Python (aqueles arquivos .pyc que ele gera sozinho)
+# ignorar cache do Python
 __pycache__/
 *.py[cod]
 *$py.class
 
-# Dica extra de Dev: ignorar a pasta do seu ambiente virtual (pesa muito e não deve ir pro Git)
+# ignorar a pasta do ambiente virtual
 venv/
 .venv/
 env/
