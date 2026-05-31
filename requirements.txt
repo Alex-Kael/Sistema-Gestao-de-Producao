@@ -2,3 +2,4 @@ streamlit
 pandas
 altair
 mysql-connector-python
+bcrypt

@@ -1,4 +1,4 @@
-# Ignorar arquivos de credenciais e variáveis de ambiente
+# ignorar arquivos de credenciais e variáveis de ambiente
 .streamlit/secrets.toml
 .env
 
