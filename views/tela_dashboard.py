@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import altair as alt
+from io import BytesIO
 from database.consultas import buscar_relatorio_producao
 
 def renderizar_dashboard():
@@ -175,6 +176,30 @@ def renderizar_dashboard():
         ).interactive() # Permite zoom e pan caso o gráfico fique muito grande
 
         st.altair_chart(grafico_ranking2, width="stretch")
+
+        df_filtrado = df_dash 
+        
+        st.divider()
+        st.markdown("### 📥 Exportar Dados do Painel")
+        
+        col_excel, col_pdf, st_vazia = st.columns([1, 1, 2])
+        
+        # BOTÃO EXCEL
+        with col_excel:
+            # Cria um arquivo em memória
+            buffer_excel = BytesIO()
+            # Escreve os dados filtrados no formato Excel
+            with pd.ExcelWriter(buffer_excel, engine='openpyxl') as writer:
+                df_filtrado.to_excel(writer, index=False, sheet_name='Relatorio_Filtrado')
+            
+            # Botão de download nativo do Streamlit
+            st.download_button(
+                label="📊 Exportar para Excel",
+                data=buffer_excel.getvalue(),
+                file_name="relatorio_producao.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                use_container_width=True
+            )
 
     else:
         st.warning("Não há dados de produção cadastrados para gerar o dashboard.")
