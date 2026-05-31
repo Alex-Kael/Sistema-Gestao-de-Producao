@@ -5,27 +5,41 @@ from controllers.auth import verificar_senha
 def renderizar_login():
     with st.container():
         st.title("Acesso ao Sistema")
-        usuario_digitado = st.text_input("Usuário")
+        usuario_digitado = st.text_input("Usuário").strip() # .strip() evita espaços acidentais no input
         senha_digitada = st.text_input("Palavra-passe", type="password")
         
         if st.button("Entrar"):
-            # Puxa as informações do banco de dados primeiro
             usuario_DB = buscar_dados_cadastros("usuarios", "id_usuario", "usuario")
             senha_DB = buscar_dados_cadastros("usuarios", "id_usuario", "senha")
             
             if usuario_DB and senha_DB:
-                linha_usuario = usuario_DB[0]
-                usuario_banco = linha_usuario[1]
-
-                linha_senha = senha_DB[0]
-                hash_banco = linha_senha[1]
+                usuario_banco = None
+                hash_banco = None
                 
-                # Usa a função do bcrypt para verificar a senha
-                senha_correta = verificar_senha(senha_digitada, hash_banco)
+                # Transforma a lista de senhas num dicionário {id: hash} para facilitar a busca             
+                dicionario_senhas = {linha[0]: linha[1] for linha in senha_DB}
                 
-                if usuario_digitado == usuario_banco and senha_correta:
-                    st.session_state['autenticado'] = True
-                    st.rerun()
+                # Percorre a lista de usuários para achar a linha do usuário digitado
+                for linha in usuario_DB:
+                    id_user = linha[0]
+                    nome_user = linha[1]
+                    
+                    if nome_user == usuario_digitado:
+                        usuario_banco = nome_user
+                        # Usa o ID para pegar o hash correspondente desse mesmo usuário
+                        hash_banco = dicionario_senhas.get(id_user)
+                        break 
+                              
+                if usuario_banco and hash_banco:
+                    senha_correta = verificar_senha(senha_digitada, hash_banco)
+                    
+                    if senha_correta:
+                        st.session_state['autenticado'] = True
+                        st.session_state['perfil'] = usuario_banco 
+                        st.success("Logado com sucesso!")
+                        st.rerun()
+                    else:
+                        st.error("Usuário ou senha incorretos.")
                 else:
                     st.error("Usuário ou senha incorretos.")
             else:

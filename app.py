@@ -13,10 +13,13 @@ st.set_page_config(page_title="Sistema de Produção", layout="wide")
 # Controle de sessão para Login
 if 'autenticado' not in st.session_state:
     st.session_state['autenticado'] = False
+if 'perfil' not in st.session_state:
+    st.session_state['perfil'] = None
 
 if not st.session_state['autenticado']:
     renderizar_login() # Mostra só o login se não estiver autenticado
-else:
+
+elif st.session_state['perfil'] == 'admin':
 
     #Título Principal
     st.title("Sistema de Gestão de Produção")
@@ -46,4 +49,15 @@ else:
 
     with aba5:
         renderizar_delecao()
+
+elif st.session_state['perfil'] == 'operador':
+        tab_prod, tab_rel = st.tabs([
+            "🏭 Lançamento de Produção", 
+            "📊 Histórico & Relatórios"
+        ])
+        
+        with tab_prod:
+            renderizar_producao()
+        with tab_rel:
+            renderizar_relatorio()
         
